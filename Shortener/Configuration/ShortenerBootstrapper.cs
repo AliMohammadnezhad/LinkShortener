@@ -8,12 +8,11 @@ namespace Shortener.Configuration;
 public static class ShortenerBootstrapper
 {
     private const string DefaultServiceConnectionString = "SvcDbContext";
-    public static void Configure(IServiceCollection services,IConfiguration configuration)
+    public static void Configure(IServiceCollection services,IConfiguration configuration,string connectionString)
     {
         
         services.Configure<UrlShortenerSetting>(configuration.GetSection(UrlShortenerSetting.SectionName));
-
-        var connectionString = configuration?.GetConnectionString("DefaultServiceConnectionString");
+        
 
         services.AddDbContext<ShortenerDbContext>(options =>
         {

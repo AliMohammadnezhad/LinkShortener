@@ -1,11 +1,13 @@
 using Shortener.Configuration;
+using Shortener.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    ShortenerBootstrapper.Configure(builder.Services,builder.Configuration);
+    var connectionString = builder.Configuration.GetConnectionString("SvcDbContext");
+    ShortenerBootstrapper.Configure(builder.Services,builder.Configuration,connectionString);
 }
 var app = builder.Build();
 {
@@ -15,10 +17,13 @@ var app = builder.Build();
         app.UseSwaggerUI();
     }
 
-    app.UseHttpsRedirection();
+    app.MapPost("/shorten", ShortenerEndpoints.ShortenEndpoint)
+        .WithOpenApi()
+        .WithName("Shortener");
 
-    app.UseAuthorization();
-
-    app.MapControllers();
+    app.MapGet("{shortCode}", RedirectEndpoints.RedirectEndpoint)
+        .WithOpenApi()
+        .WithName("Redirect")
+        .AllowAnonymous();
 }
 app.Run();
