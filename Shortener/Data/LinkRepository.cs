@@ -17,12 +17,15 @@ public class LinkRepository : ILinkRepository
     {
         var link = await _shortenerDbContext.Links.FirstOrDefaultAsync(x => x.ShortCode == shortCode, cancellationToken);
 
-        if (link != null)
-        {
-            return (true, link.LongUrl);
-        }
+        if (link == null)
+            return (false, null);
 
-        return (false, null);
+        link.IncreaseCount();
+
+        _shortenerDbContext.Links.Update(link);
+        await _shortenerDbContext.SaveChangesAsync(cancellationToken);
+
+        return (true, link.LongUrl);
     }
 
     public async Task<(bool found, string? value)> TryGetShortUrlAsync(string longUrl, CancellationToken cancellationToken)
@@ -36,9 +39,7 @@ public class LinkRepository : ILinkRepository
 
         return (false, null);
     }
-     
+
     public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
         => await _shortenerDbContext.SaveChangesAsync(cancellationToken) > 0;
-
-
 }
