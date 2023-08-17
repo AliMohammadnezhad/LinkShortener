@@ -8,5 +8,4 @@ public class UrlShortenerSetting
 
     public required int ShortCodeLength { get; set; }
 
-    public int DefaultAbsoluteExpirationRelativeToNowOnDays { get; set; }
 }
